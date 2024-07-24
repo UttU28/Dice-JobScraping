@@ -29,7 +29,9 @@ def addNewJobSQL(jobID, title, location, company, description, datePosted, dateU
         conn.close()
         return True
         # print(f"Data inserted successfully for {jobID}")
-    except: print("Error in Adding Data")
+    except: 
+        print("Error in Adding Data")
+        return False
 
 # Example usage
 # executeAllSQL('1d2013e7-baa2-4f99-bd47-36de708e00f5', 'DevOps Databricks Engineer - Azure @ Remote', 'US', 'Aroha Technologies', 'Position:1min (Workspaces, Unity Catalog, Volumes, Ext volumes, etc.)', 1721504740, 1721504740)

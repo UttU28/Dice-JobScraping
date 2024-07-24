@@ -1,4 +1,3 @@
-import subprocess
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -9,7 +8,6 @@ from bs4 import BeautifulSoup
 import json, os
 from datetime import datetime, timezone
 from tqdm import tqdm
-import schedule
 
 # Custom Library Imports - Ensure these paths are correct based on your project structure
 from dataScraping.jobDescription import *
