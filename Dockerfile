@@ -1,45 +1,29 @@
-# Use Python 3.8 as base image
-FROM python:3.8
+ARG PYTHON_VERSION=3.10
+FROM python:${PYTHON_VERSION}-slim as python-base
 
-# Set working directory inside the container
 WORKDIR /app
 
-# Copy current directory contents into the container at /app
-COPY . /app
-
-# Install curl and gnupg for package management
 RUN apt-get update && \
-    apt-get install -y \
+    apt-get install -y --no-install-recommends build-essential \
     curl \
-    gnupg \
-    && rm -rf /var/lib/apt/lists/*
+    apt-utils \
+    gnupg2 &&\
+    rm -rf /var/lib/apt/lists/* && \
+    pip install --upgrade pip
 
-# Check Ubuntu version and exit if not supported
-RUN if ! [[ "18.04 20.04 22.04 23.04" == *"$(lsb_release -rs)"* ]]; then \
-        echo "Ubuntu $(lsb_release -rs) is not currently supported."; \
-        exit 1; \
-    fi
-
-# Install Microsoft GPG key
+RUN apt-get update
 RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+RUN curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list 
 
-# Install Microsoft SQL Server repository configuration
-RUN curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | \
-    tee /etc/apt/sources.list.d/mssql-release.list
 
-# Update apt-get and install MS SQL Server tools and dependencies
-RUN apt-get update && \
-    ACCEPT_EULA=Y apt-get install -y \
-    msodbcsql18 \
-    mssql-tools18 \
-    unixodbc-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN exit
+RUN apt-get update
+RUN env ACCEPT_EULA=Y apt-get install -y msodbcsql18 
 
-# Add mssql-tools to PATH
-RUN echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
+COPY requirements.txt .
 
-# Source .bashrc to apply PATH changes
-RUN /bin/bash -c "source ~/.bashrc"
+COPY /odbc.ini / 
+RUN odbcinst -i -s -f /odbc.ini -l
+RUN cat /etc/odbc.ini
 
-# Set the entry point for the container to run your Python application
-CMD ["python3", "app.py"]
+RUN pip install -r requirements.txt
