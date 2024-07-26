@@ -5,7 +5,7 @@ from azure.storage.blob import ContainerClient
 dirRoot = os.path.dirname(os.path.abspath(__file__))
 
 def loadConfig():
-    with open(dirRoot + "/config.yaml", "r") as yamlFile:
+    with open(os.path.join(dirRoot, "config.yaml"), "r") as yamlFile:
         return yaml.load(yamlFile, Loader=yaml.FullLoader)
 
 config = loadConfig()

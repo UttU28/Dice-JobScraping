@@ -1,3 +1,4 @@
 config.yaml
 jobData.json
 rawData.json
+__pycache__/

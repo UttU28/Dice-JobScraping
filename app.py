@@ -20,6 +20,20 @@ contentOut = ["security clearance", "security-clearance", "8+", "9+", "10+", "11
 contentIn = ["devops", "pipeline", "pipelines", "azure", "aws", "cloud", "cloud engineer", "cloud developer", "terraform", "ansible", "cicd", "ci-ci", "ci/cd", "kubernetes", "flask", "django", "FastAPI", "ETL"]
 
 
+def removeOldData():
+    filePath = 'rawData.json'
+    with open(filePath, 'r') as file:
+        rawData = json.load(file)
+    currentTime = int(datetime.now().timestamp())
+    THIRTY_SIX_HOURS = 36 * 60 * 60
+    filteredData = {
+        k: v for k, v in rawData.items() if (currentTime - v) <= THIRTY_SIX_HOURS
+    }
+    with open(filePath, 'w') as file:
+        json.dump(filteredData, file, indent=4)
+    print(f"Deleted old data from {filePath}")
+
+
 def scrapeTheJobs():
     def checkRequirementMatching(taroText, shouldBe, shouldNot):
         for temp1 in shouldBe:
@@ -101,7 +115,7 @@ def scrapeTheJobs():
                 location = exampleElement.select('span.search-result-location')[0].text.strip()
                 title = exampleElement.select('a.card-title-link')[0].text.strip()
                 company = exampleElement.select('[data-cy="search-result-company-name"]')[0].text.strip()
-                print(jobID, title, location, company)
+                # print(jobID, title, location, company)
                 if writeTheJob(jobID, title, location, company):
                     passCount += 1
         except: print("Asuvidha k liye khed hai")
@@ -110,6 +124,7 @@ def scrapeTheJobs():
 
 if __name__ == "__main__":
     downloadTheFiles()
+    removeOldData()
     scrapeTheJobs()
     uploadTheFiles()
     # schedule.every(15).minutes.do(scrapeTheJobs)
