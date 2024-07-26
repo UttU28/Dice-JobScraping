@@ -1,17 +1,19 @@
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 import json, os
 from datetime import datetime, timezone
 from tqdm import tqdm
 
 # Custom Library Imports - Ensure these paths are correct based on your project structure
-from dataScraping.jobDescription import *
-from dataScraping.dataHandling import *
+from jobDescription import *
+from dataHandling import *
 
 contentOut = ["security clearance", "security-clearance", "8+", "9+", "10+", "11+", "12+"]
 contentIn = ["devops", "pipeline", "pipelines", "azure", "aws", "cloud", "cloud engineer", "cloud developer", "terraform", "ansible", "cicd", "ci-ci", "ci/cd", "kubernetes", "flask", "django", "FastAPI", "ETL"]
@@ -66,7 +68,7 @@ def scrapeTheJobs():
     options.add_argument("--disable-popup-blocking")  # Disable popup blocking
     options.add_argument("--disable-infobars")  
     # options.add_argument(f"webdriver.chrome.driver={chrome_driver_path}")
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     jobKeyWords = ['DevOps', 'Azure devops', 'azure data']
     exampleElements = []
@@ -98,6 +100,7 @@ def scrapeTheJobs():
                 location = exampleElement.select('span.search-result-location')[0].text.strip()
                 title = exampleElement.select('a.card-title-link')[0].text.strip()
                 company = exampleElement.select('[data-cy="search-result-company-name"]')[0].text.strip()
+                print(jobID, title, location, company)
                 if writeTheJob(jobID, title, location, company):
                     passCount += 1
         except: print("Asuvidha k liye khed hai")
