@@ -1,7 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
 import json
-from playTime import *
+from datetime import datetime, timezone
+
+def bhaiTimeKyaHai(watch):
+    watch = datetime.strptime(watch, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
+    timeHai = int(watch.timestamp())
+    return timeHai
 
 def getJobDescription(jobID):
     url = f"https://www.dice.com/job-detail/{jobID}"
