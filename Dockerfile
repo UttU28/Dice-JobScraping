@@ -32,6 +32,8 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+RUN apt update
+RUN apt -y upgrade
 # Install Google Chrome and ChromeDriver
 RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
     apt-get install -y ./google-chrome-stable_current_amd64.deb && \
@@ -39,6 +41,7 @@ RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.d
     wget https://storage.googleapis.com/chrome-for-testing-public/127.0.6533.72/linux64/chromedriver-linux64.zip && \
     unzip chromedriver-linux64.zip && \
     rm chromedriver-linux64.zip && \
+    chmod +x chromedriver-linux64/chromedriver && \
     mv chromedriver-linux64/chromedriver /usr/local/share/chromedriver && \
     ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver && \
     ln -s /usr/local/share/chromedriver /usr/bin/chromedriver && \

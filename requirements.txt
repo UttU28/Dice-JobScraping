@@ -5,5 +5,5 @@ requests
 pypyodbc
 lxml
 webdriver-manager
-yaml
+pyyaml
 azure-storage-blob
