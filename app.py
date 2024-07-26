@@ -14,6 +14,7 @@ from tqdm import tqdm
 # Custom Library Imports - Ensure these paths are correct based on your project structure
 from jobDescription import *
 from dataHandling import *
+from azureBaby import *
 
 contentOut = ["security clearance", "security-clearance", "8+", "9+", "10+", "11+", "12+"]
 contentIn = ["devops", "pipeline", "pipelines", "azure", "aws", "cloud", "cloud engineer", "cloud developer", "terraform", "ansible", "cicd", "ci-ci", "ci/cd", "kubernetes", "flask", "django", "FastAPI", "ETL"]
@@ -108,7 +109,9 @@ def scrapeTheJobs():
     print(f"\n\n\nPASS COUNT = {passCount}")
 
 if __name__ == "__main__":
+    downloadTheFiles()
     scrapeTheJobs()
+    uploadTheFiles()
     # schedule.every(15).minutes.do(scrapeTheJobs)
 
     # while True:

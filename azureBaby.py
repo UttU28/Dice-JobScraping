@@ -27,7 +27,7 @@ def downloadTheFiles():
     containerClient = ContainerClient.from_connection_string(connectionString, containerName)
     for fileName in [jobDataFile, rawDataFile]:
         blobClient = containerClient.get_blob_client(fileName)
-        with open(file=os.path.join(dirRoot, fileName + '1'), mode="wb") as sample_blob:
+        with open(file=os.path.join(dirRoot, fileName), mode="wb") as sample_blob:
             download_stream = blobClient.download_blob()
             sample_blob.write(download_stream.readall())
             print(f"{fileName}, Download Successfully")
