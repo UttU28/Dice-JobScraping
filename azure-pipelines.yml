@@ -24,38 +24,38 @@ steps:
 - checkout: self
   displayName: 'Checkout Repository'
 
-- task: AzureCLI@2
-  displayName: 'Create ACR'
-  inputs:
-    azureSubscription: 'dicePipeline'
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      echo "Creating ACR..."
-      az acr create --resource-group $(resourceGroupName) --name $(acrName) --sku Basic --admin-enabled true
+# - task: AzureCLI@2
+#   displayName: 'Create ACR'
+#   inputs:
+#     azureSubscription: 'dicePipeline'
+#     scriptType: 'bash'
+#     scriptLocation: 'inlineScript'
+#     inlineScript: |
+#       echo "Creating ACR..."
+#       az acr create --resource-group $(resourceGroupName) --name $(acrName) --sku Basic --admin-enabled true
 
-- task: Docker@2
-  displayName: 'Login to ACR'
-  inputs:
-    command: login
-    containerRegistry: '$(acrName).azurecr.io'
-    azureSubscriptionEndpoint: 'dicePipeline'
+# - task: Docker@2
+#   displayName: 'Login to ACR'
+#   inputs:
+#     command: login
+#     containerRegistry: '$(acrName).azurecr.io'
+#     azureSubscriptionEndpoint: 'dicePipeline'
 
-- task: Docker@2
-  displayName: 'Build Docker Image'
-  inputs:
-    command: build
-    dockerfile: '**/Dockerfile'
-    containerRegistry: '$(acrName).azurecr.io'
-    repository: '$(imageName)'
-    tags: |
-      $(version)
+# - task: Docker@2
+#   displayName: 'Build Docker Image'
+#   inputs:
+#     command: build
+#     dockerfile: '**/Dockerfile'
+#     containerRegistry: '$(acrName).azurecr.io'
+#     repository: '$(imageName)'
+#     tags: |
+#       $(version)
 
-- task: Docker@2
-  displayName: 'Push Docker Image'
-  inputs:
-    command: push
-    containerRegistry: '$(acrName).azurecr.io'
-    repository: '$(imageName)'
-    tags: |
-      $(version)
+# - task: Docker@2
+#   displayName: 'Push Docker Image'
+#   inputs:
+#     command: push
+#     containerRegistry: '$(acrName).azurecr.io'
+#     repository: '$(imageName)'
+#     tags: |
+#       $(version)
