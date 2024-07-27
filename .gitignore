@@ -2,3 +2,4 @@ config.yaml
 jobData.json
 rawData.json
 __pycache__/
+*.pdf
