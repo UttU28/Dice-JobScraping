@@ -15,7 +15,7 @@ steps:
   inputs:
     azureSubscription: 'dicePipeline'
     scriptType: 'bash'
-    scriptPath: '-'
+    scriptLocation: 'inlineScript'
     inlineScript: |
       # Retrieve secrets from Azure Key Vault
       server=$(az keyvault secret show --name $(serverSecretName) --vault-name $(keyVaultName) --query value -o tsv)
