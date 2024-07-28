@@ -7,10 +7,9 @@ variables:
   resourceGroupName: 'thisresourcegroup'
   acrName: 'thisacr'
   imageName: 'dicecontainer'
-  version: 'v1'
+  version: '$(Build.BuildId)'
   location: 'eastus'  # Change this to your desired location
   aciName: 'thiscontainerinstancemaybe'
-  imageTag: 'latest'
   managedIdentity: '/subscriptions/e4cf2944-5342-4787-b990-418828e39bfc/resourcegroups/thisresourcegroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/thismyidentity'
   # DataBase
   server: 'dice-sql.database.windows.net'
@@ -68,7 +67,7 @@ steps:
       az container create \
         --resource-group $(resourceGroupName) \
         --name $(aciName) \
-        --image $(acrName).azurecr.io/$(imageName):$(imageTag) \
+        --image $(acrName).azurecr.io/$(imageName):$(version) \
         --assign-identity $(managedIdentity) \
         --cpu 1 \
         --memory 1 \
