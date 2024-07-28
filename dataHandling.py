@@ -2,13 +2,12 @@ import os, yaml
 import pypyodbc as odbc
 from datetime import datetime, timezone
 from dotenv import load_dotenv
+load_dotenv()
 
-dirRoot = os.path.dirname(os.path.abspath(__file__))
-
-server = os.environ['server']
-database = os.environ['database']
-username = os.environ['username']
-password = os.environ['password']
+server = os.getenv('server')
+database = os.getenv('database')
+username = os.getenv('username')
+password = os.getenv('password')
 
 connectionString = f'Driver={{ODBC Driver 17 for SQL Server}};Server=tcp:{server},1433;Database={database};Uid={username};Pwd={password};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;'
 

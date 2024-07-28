@@ -1,17 +1,13 @@
 import os
-import yaml
 from azure.storage.blob import ContainerClient
+from dotenv import load_dotenv
+load_dotenv()
 
 dirRoot = os.path.dirname(os.path.abspath(__file__))
 
-def loadConfig():
-    with open(os.path.join(dirRoot, "config.yaml"), "r") as yamlFile:
-        return yaml.load(yamlFile, Loader=yaml.FullLoader)
-
-config = loadConfig()
-connectionString = config['connectionString']
-containerName = config['containerName'] 
-jobDataFile, rawDataFile = config['jobDataFile'], config['rawDataFile'] 
+connectionString = os.getenv('connectionString')
+containerName = os.getenv('containerName') 
+jobDataFile, rawDataFile = os.getenv('jobDataFile'), os.getenv('rawDataFile') 
 
 def uploadTheFiles():
     containerClient = ContainerClient.from_connection_string(connectionString, containerName)
