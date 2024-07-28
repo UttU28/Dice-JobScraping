@@ -2,6 +2,6 @@
 
 SELECT COUNT(*) FROM myQueue;
 
-delete from myQueue;
-delete from applyQueue;
-delete from allData;
+-- delete from myQueue;
+-- delete from applyQueue;
+-- delete from allData;
