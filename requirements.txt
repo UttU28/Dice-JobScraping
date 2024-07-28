@@ -3,7 +3,8 @@ beautifulsoup4
 tqdm
 requests
 pypyodbc
-lxml
 webdriver-manager
 pyyaml
 azure-storage-blob
+python-dotenv
+pytz
