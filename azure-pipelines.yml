@@ -70,6 +70,6 @@ steps:
         --memory 1 \
         --restart-policy Never \
         --registry-username $(acrName) \
-        --registry-password $(acrPassword) \ # Ensure to handle secrets securely
-        --environment-variables server=$(server) database=$(database) username=$(username) password=$(password) connectionString=$(connectionString) containerName=$(containerName) jobDataFile=$(jobDataFile) rawDataFile=$(rawDataFile) 
+        --registry-password $(acrPassword) # Ensure to handle secrets securely
+        # --environment-variables server=$(server) database=$(database) username=$(username) password=$(password) connectionString=$(connectionString) containerName=$(containerName) jobDataFile=$(jobDataFile) rawDataFile=$(rawDataFile) 
     displayName: 'Run Azure CLI Script'
