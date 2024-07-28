@@ -13,7 +13,7 @@ variables:
 steps:
 - task: AzureCLI@2
   inputs:
-    azureSubscription: 'YOUR_SERVICE_CONNECTION_NAME'
+    azureSubscription: 'dicePipeline'
     scriptType: 'bash'
     scriptPath: '-'
     inlineScript: |
