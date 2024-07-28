@@ -9,10 +9,3 @@ Checkout hte repo
 build the docker file
 create ACR 
 push to ACR
-
-
-
-
-
-Create an Azure DevOps pipeline code for creating ACR in the "testPipeline" resource group having subscribtion id "dac952c9-dd98-4242-8793-26290d7a297d"
-login to acr using service principal "dicePipeline"  

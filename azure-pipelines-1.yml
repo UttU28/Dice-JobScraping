@@ -1,19 +1,45 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
+  branches:
+    exclude:
+      - '*'
 
-pool:
-  vmImage: ubuntu-latest
+pr: none
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+jobs:
+- job: DeployACI
+  displayName: 'Deploy to Azure Container Instances'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: 'dicePipeline'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        #!/bin/bash
+        echo "HELLO BOIIIIIIIIII"
+        
+        RESOURCE_GROUP='thisresourcegroup'
+        ACI_NAME='thiscontainerinstancemaybe'
+        REGISTRY_NAME='thisacr'
+        IMAGE_NAME='dicecontainer'
+        IMAGE_TAG='latest'
+        ACR_USERNAME='thisacr'
+        ACR_PASSWORD='U9+ivfherZPq3+UWDnj1fxftpOqWUgXqspIc90YYFI+ACRBkerUy'
+        MANAGED_IDENTITY='/subscriptions/e4cf2944-5342-4787-b990-418828e39bfc/resourcegroups/thisresourcegroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/thismyidentity'
+        # Log in to ACR
+        az acr login --name $REGISTRY_NAME
+        echo "HELLO BOIIIIIIIIII2"
+        # Create or update Azure Container Instance
+        az container create \
+          --resource-group $RESOURCE_GROUP \
+          --name $ACI_NAME \
+          --image $REGISTRY_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG \
+          --assign-identity $MANAGED_IDENTITY \
+          --cpu 1 \
+          --memory 1 \
+          --restart-policy Never \
+          --registry-username $ACR_USERNAME \
+          --registry-password $ACR_PASSWORD
+    displayName: 'Run Azure CLI Script'
