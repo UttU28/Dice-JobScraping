@@ -9,31 +9,22 @@ variables:
   imageName: 'dicecontainer'
   version: 'v1'
   location: 'eastus'  # Change this to your desired location
+  aciName: 'thiscontainerinstancemaybe'
+  imageTag: 'latest'
+  managedIdentity: '/subscriptions/e4cf2944-5342-4787-b990-418828e39bfc/resourcegroups/thisresourcegroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/thismyidentity'
+  # DataBase
+  server: 'dice-sql.database.windows.net'
+  database: 'dice_sql_database'
+  username: 'iAmRoot'
+  password: 'Qwerty@213'
 
+  # Azure
+  connectionString: 'DefaultEndpointsProtocol=https;AccountName=dicestorage01;AccountKey=iIl/9k0FD6bMLck2NRkLLEtUTQ6p7v0UUk6v/bG5Aotxc+rmmAH5o10Pt0NArA21lZkHX7AFNFdb+ASt7i9zKA==;EndpointSuffix=core.windows.net'
+  containerName: 'dice-data'
+  jobDataFile: 'jobData.json'
+  rawDataFile: 'rawData.json'
+  
 steps:
-# - task: AzureCLI@2
-#   displayName: 'Create Resource Group'
-#   inputs:
-#     azureSubscription: 'dicePipeline'
-#     scriptType: 'bash'
-#     scriptLocation: 'inlineScript'
-#     inlineScript: |
-#       echo "Creating Resource Group..."
-#       az group create --name $(resourceGroupName) --location $(location)
-
-# - checkout: self
-#   displayName: 'Checkout Repository'
-
-# - task: AzureCLI@2
-#   displayName: 'Create ACR'
-#   inputs:
-#     azureSubscription: 'dicePipeline'
-#     scriptType: 'bash'
-#     scriptLocation: 'inlineScript'
-#     inlineScript: |
-#       echo "Creating ACR..."
-#       az acr create --resource-group $(resourceGroupName) --name $(acrName) --sku Basic --admin-enabled true
-
 - task: Docker@2
   displayName: 'Login to ACR'
   inputs:
@@ -61,34 +52,28 @@ steps:
       $(version)
 
 - task: AzureCLI@2
-    inputs:
-      azureSubscription: 'dicePipeline'
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: |
-        #!/bin/bash
-        echo "HELLO BOIIIIIIIIII"
-        
-        RESOURCE_GROUP='thisresourcegroup'
-        ACI_NAME='thiscontainerinstancemaybe'
-        REGISTRY_NAME='thisacr'
-        IMAGE_NAME='dicecontainer'
-        IMAGE_TAG='latest'
-        ACR_USERNAME='thisacr'
-        ACR_PASSWORD='U9+ivfherZPq3+UWDnj1fxftpOqWUgXqspIc90YYFI+ACRBkerUy'
-        MANAGED_IDENTITY='/subscriptions/e4cf2944-5342-4787-b990-418828e39bfc/resourcegroups/thisresourcegroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/thismyidentity'
-        # Log in to ACR
-        az acr login --name $REGISTRY_NAME
-        echo "HELLO BOIIIIIIIIII2"
-        # Create or update Azure Container Instance
-        az container create \
-          --resource-group $RESOURCE_GROUP \
-          --name $ACI_NAME \
-          --image $REGISTRY_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG \
-          --assign-identity $MANAGED_IDENTITY \
-          --cpu 1 \
-          --memory 1 \
-          --restart-policy Never \
-          --registry-username $ACR_USERNAME \
-          --registry-password $ACR_PASSWORD
+  inputs:
+    azureSubscription: 'dicePipeline'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      #!/bin/bash
+      
+      echo "Starting Azure CLI script..."
+      
+      echo "Logging in to ACR..."
+      az acr login --name $(acrName)
+      
+      echo "Creating or updating Azure Container Instance..."
+      az container create \
+        --resource-group $(resourceGroupName) \
+        --name $(aciName) \
+        --image $(acrName).azurecr.io/$(imageName):$(imageTag) \
+        --assign-identity $(managedIdentity) \
+        --cpu 1 \
+        --memory 1 \
+        --restart-policy Never \
+        --registry-username $(acrName) \
+        --registry-password $(acrPassword) \ # Ensure to handle secrets securely
+        --environment-variables server=$(server) database=$(database) username=$(username) password=$(password) connectionString=$(connectionString) containerName=$(containerName) jobDataFile=$(jobDataFile) rawDataFile=$(rawDataFile) 
     displayName: 'Run Azure CLI Script'
