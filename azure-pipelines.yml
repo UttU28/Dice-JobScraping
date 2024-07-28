@@ -6,6 +6,7 @@ pool:
 variables:
   resourceGroupName: 'thisresourcegroup'
   acrName: 'thisacr'
+  acrPassword: 'U9+ivfherZPq3+UWDnj1fxftpOqWUgXqspIc90YYFI+ACRBkerUy'
   imageName: 'dicecontainer'
   version: '$(Build.BuildId)'
   location: 'eastus'  # Change this to your desired location
@@ -71,5 +72,5 @@ steps:
         --restart-policy Never \
         --registry-username $(acrName) \
         --registry-password $(acrPassword) # Ensure to handle secrets securely
-        # --environment-variables server=$(server) database=$(database) username=$(username) password=$(password) connectionString=$(connectionString) containerName=$(containerName) jobDataFile=$(jobDataFile) rawDataFile=$(rawDataFile) 
+        --env-vars server=$(server) database=$(database) username=$(username) password=$(password) connectionString=$(connectionString) containerName=$(containerName) jobDataFile=$(jobDataFile) rawDataFile=$(rawDataFile) 
     displayName: 'Run Azure CLI Script'
