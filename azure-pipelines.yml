@@ -5,7 +5,7 @@ pool:
 
 variables:
   imageName: 'dicecontainer'
-  version: '$(Build.BuildId)'
+  version: 'latest'
   # version: '39'
   location: 'eastus'  # Change this to your desired location
   aciName: 'thiscontainerinstanc'
@@ -33,7 +33,6 @@ steps:
     repository: '$(imageName)'
     command: 'build'
     Dockerfile: '**/Dockerfile'
-    tags: '$(version)'
 
 - task: Docker@2
   displayName: 'Push Docker Image'
