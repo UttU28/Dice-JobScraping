@@ -10,10 +10,10 @@ variables:
   usernameSecretName: 'username'
   passwordSecretName: 'password'
 
+    # azureSubscription: 'dicePipeline'
 steps:
 - task: AzureCLI@2
   inputs:
-    azureSubscription: 'dicePipeline'
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
