@@ -30,3 +30,4 @@ Dockerfile
 *.tmp
 *.pdf
 *.yml
+deploy.sh

@@ -3,4 +3,3 @@ jobData.json
 rawData.json
 __pycache__/
 *.pdf
-deploy.sh
