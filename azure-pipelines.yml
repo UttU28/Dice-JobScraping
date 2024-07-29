@@ -15,7 +15,7 @@ steps:
 - task: AzureKeyVault@2
   displayName: Get Secrets from Key Vault
   inputs:
-    azureSubscription: 'thismanagedidentity'
+    azureSubscription: 'dicePipeline'
     KeyVaultName: 'thisdicekeyvault'
     SecretsFilter: '*'
     RunAsPreJob: false
