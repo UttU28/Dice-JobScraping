@@ -40,7 +40,6 @@ steps:
     containerRegistry: 'dockerSC'
     repository: '$(imageName)'
     command: 'push'
-    tags: '$(version)'
 
 - task: AzureCLI@2
   inputs:
