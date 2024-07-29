@@ -17,7 +17,7 @@ steps:
   inputs:
     azureSubscription: 'dicePipeline'
     KeyVaultName: 'thisdicekeyvault'
-    SecretsFilter: '*'
+    SecretsFilter: ''
     RunAsPreJob: false
 
 - task: CmdLine@2
