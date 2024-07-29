@@ -11,31 +11,52 @@ variables:
   passwordSecretName: 'password'
 
 steps:
-- task: AzureCLI@2
+
+- task: AzureKeyVault@2
+  displayName: Get Secrets from Key Vault
   inputs:
-    scriptType: 'bash'
     azureSubscription: 'thismanagedidentity'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      az login 
+    KeyVaultName: 'thisdicekeyvault'
+    SecretsFilter: '*'
+    RunAsPreJob: false
+
+- task: CmdLine@2
+  displayName: SHow the data vitch
+  inputs:
+    script: |
+      echo $(server)
+      echo $(server) > secrets.txt
+      cat secrets.txt
+
+      echo $(username)
+      echo $(username) > secrets.txt
+      cat secrets.txt
+
+# - task: AzureCLI@2
+#   inputs:
+#     scriptType: 'bash'
+#     azureSubscription: 'thismanagedidentity'
+#     scriptLocation: 'inlineScript'
+#     inlineScript: |
+#       az login 
       
-      # Retrieve secrets from Azure Key Vault
-      server=$(az keyvault secret show --name $(serverSecretName) --vault-name $(keyVaultName) --query value -o tsv)
-      username=$(az keyvault secret show --name $(usernameSecretName) --vault-name $(keyVaultName) --query value -o tsv)
-      password=$(az keyvault secret show --name $(passwordSecretName) --vault-name $(keyVaultName) --query value -o tsv)
+#       # Retrieve secrets from Azure Key Vault
+#       server=$(az keyvault secret show --name $(serverSecretName) --vault-name $(keyVaultName) --query value -o tsv)
+#       username=$(az keyvault secret show --name $(usernameSecretName) --vault-name $(keyVaultName) --query value -o tsv)
+#       password=$(az keyvault secret show --name $(passwordSecretName) --vault-name $(keyVaultName) --query value -o tsv)
 
-      # Set them as pipeline variables
-      echo "##vso[task.setvariable variable=server;isOutput=true]$server"
-      echo "##vso[task.setvariable variable=username;isOutput=true]$username"
-      echo "##vso[task.setvariable variable=password;isOutput=true]$password"
-    displayName: 'Get secrets from Azure Key Vault'
+#       # Set them as pipeline variables
+#       echo "##vso[task.setvariable variable=server;isOutput=true]$server"
+#       echo "##vso[task.setvariable variable=username;isOutput=true]$username"
+#       echo "##vso[task.setvariable variable=password;isOutput=true]$password"
+#     displayName: 'Get secrets from Azure Key Vault'
 
-- script: |
-    echo "Server: $(server)"
-    echo "Username: $(username)"
-    echo "Password: $(password)"
-  displayName: 'Print secrets'
-  # Note: Be cautious with printing sensitive information
+# - script: |
+#     echo "Server: $(server)"
+#     echo "Username: $(username)"
+#     echo "Password: $(password)"
+#   displayName: 'Print secrets'
+#   # Note: Be cautious with printing sensitive information
 
 
 # Note: Replace 'YOUR_SERVICE_CONNECTION_NAME' with the name of your Azure Service Connection
