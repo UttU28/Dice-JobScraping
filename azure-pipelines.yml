@@ -1,15 +1,15 @@
-trigger:
-- main
+trigger: none
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  keyVaultName: 'thisdicekeyvault'
-  serverSecretName: 'server'
-  usernameSecretName: 'username'
-  passwordSecretName: 'password'
-
+  imageName: 'dicecontainer'
+  version: '$(Build.BuildId)'
+  # version: '39'
+  location: 'eastus'  # Change this to your desired location
+  aciName: 'thiscontainerinstanc'
+  
 steps:
 
 - task: AzureKeyVault@2
@@ -17,128 +17,56 @@ steps:
   inputs:
     azureSubscription: 'dicePipeline'
     KeyVaultName: 'thisdicekeyvault'
-    SecretsFilter: ''
-    RunAsPreJob: false
+    SecretsFilter: '*'
+    RunAsPreJob: true
 
-- task: CmdLine@2
-  displayName: SHow the data vitch
+- task: Docker@2
+  displayName: 'Login to ACR'
   inputs:
-    script: |
-      echo $(server)
-      echo $(server) > secrets.txt
-      cat secrets.txt
+    containerRegistry: 'dockerSC'
+    command: 'login'
 
-      echo $(username)
-      echo $(username) > secrets.txt
-      cat secrets.txt
+- task: Docker@2
+  displayName: 'Build Docker Image'
+  inputs:
+    containerRegistry: 'dockerSC'
+    repository: '$(imageName)'
+    command: 'build'
+    Dockerfile: '**/Dockerfile'
+    tags: '$(version)'
 
-# - task: AzureCLI@2
-#   inputs:
-#     scriptType: 'bash'
-#     azureSubscription: 'thismanagedidentity'
-#     scriptLocation: 'inlineScript'
-#     inlineScript: |
-#       az login 
+- task: Docker@2
+  displayName: 'Push Docker Image'
+  inputs:
+    containerRegistry: 'dockerSC'
+    repository: '$(imageName)'
+    command: 'push'
+    tags: '$(version)'
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'dicePipeline'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      #!/bin/bash
       
-#       # Retrieve secrets from Azure Key Vault
-#       server=$(az keyvault secret show --name $(serverSecretName) --vault-name $(keyVaultName) --query value -o tsv)
-#       username=$(az keyvault secret show --name $(usernameSecretName) --vault-name $(keyVaultName) --query value -o tsv)
-#       password=$(az keyvault secret show --name $(passwordSecretName) --vault-name $(keyVaultName) --query value -o tsv)
-
-#       # Set them as pipeline variables
-#       echo "##vso[task.setvariable variable=server;isOutput=true]$server"
-#       echo "##vso[task.setvariable variable=username;isOutput=true]$username"
-#       echo "##vso[task.setvariable variable=password;isOutput=true]$password"
-#     displayName: 'Get secrets from Azure Key Vault'
-
-# - script: |
-#     echo "Server: $(server)"
-#     echo "Username: $(username)"
-#     echo "Password: $(password)"
-#   displayName: 'Print secrets'
-#   # Note: Be cautious with printing sensitive information
-
-
-# Note: Replace 'YOUR_SERVICE_CONNECTION_NAME' with the name of your Azure Service Connection
-
-
-
-# trigger: none
-
-# pool:
-#   vmImage: 'ubuntu-latest'
-
-# variables:
-#   resourceGroupName: 'thisresourcegroup'
-#   acrName: 'thisacr'
-#   acrPassword: 'U9+ivfherZPq3+UWDnj1fxftpOqWUgXqspIc90YYFI+ACRBkerUy'
-#   imageName: 'dicecontainer'
-#   version: '$(Build.BuildId)'
-#   # version: '39'
-#   location: 'eastus'  # Change this to your desired location
-#   aciName: 'thiscontainerinstanc'
-#   managedIdentity: '/subscriptions/e4cf2944-5342-4787-b990-418828e39bfc/resourcegroups/thisresourcegroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/thismyidentity'
-#   # DataBase
-#   server: 'dice-sql.database.windows.net'
-#   database: 'dice_sql_database'
-#   username: 'iAmRoot'
-#   password: 'Qwerty@213'
-
-#   # Azure
-#   connectionString: 'DefaultEndpointsProtocol=https;AccountName=dicestorage01;AccountKey=iIl/9k0FD6bMLck2NRkLLEtUTQ6p7v0UUk6v/bG5Aotxc+rmmAH5o10Pt0NArA21lZkHX7AFNFdb+ASt7i9zKA==;EndpointSuffix=core.windows.net'
-#   containerName: 'dice-data'
-#   jobDataFile: 'jobData.json'
-#   rawDataFile: 'rawData.json'
-  
-# steps:
-# - task: Docker@2
-#   displayName: 'Login to ACR'
-#   inputs:
-#     containerRegistry: 'dockerSC'
-#     command: 'login'
-
-# - task: Docker@2
-#   displayName: 'Build Docker Image'
-#   inputs:
-#     containerRegistry: 'dockerSC'
-#     repository: '$(imageName)'
-#     command: 'build'
-#     Dockerfile: '**/Dockerfile'
-#     tags: '$(version)'
-
-# - task: Docker@2
-#   displayName: 'Push Docker Image'
-#   inputs:
-#     containerRegistry: 'dockerSC'
-#     repository: '$(imageName)'
-#     command: 'push'
-#     tags: '$(version)'
-
-# - task: AzureCLI@2
-#   inputs:
-#     azureSubscription: 'dicePipeline'
-#     scriptType: 'bash'
-#     scriptLocation: 'inlineScript'
-#     inlineScript: |
-#       #!/bin/bash
+      echo "Starting Azure CLI script..."
       
-#       echo "Starting Azure CLI script..."
+      echo "Logging in to ACR..."
+      az acr login --name $(acrName)
       
-#       echo "Logging in to ACR..."
-#       az acr login --name $(acrName)
-      
-#       echo "Creating or updating Azure Container Instance..."
-#       az container create \
-#         --resource-group $(resourceGroupName) \
-#         --name $(aciName) \
-#         --image $(acrName).azurecr.io/$(imageName):$(version) \
-#         --assign-identity $(managedIdentity) \
-#         --cpu 1 \
-#         --memory 1 \
-#         --restart-policy Never \
-#         --registry-username $(acrName) \
-#         --registry-password $(acrPassword) \
-#         --environment-variables 'server'='$(server)' 'database'='$(database)' 'username'='$(username)' 'password'='$(password)' 'connectionString'='$(connectionString)' 'containerName'='$(containerName)' 'jobDataFile'='$(jobDataFile)' 'rawDataFile'='$(rawDataFile)' 
-#     displayName: 'Run Azure CLI Script'
+      echo "Creating or updating Azure Container Instance..."
+      az container create \
+        --resource-group $(resourceGroupName) \
+        --name $(aciName) \
+        --image $(acrName).azurecr.io/$(imageName):$(version) \
+        --cpu 1 \
+        --memory 1 \
+        --restart-policy Never \
+        --registry-username $(acrName) \
+        --registry-password $(acrPassword) \
+        --environment-variables 'server'='$(server)' 'database'='$(database)' 'username'='$(username)' 'password'='$(password)' 'connectionString'='$(connectionString)' 'containerName'='$(containerName)' 'jobDataFile'='$(jobDataFile)' 'rawDataFile'='$(rawDataFile)' 
+    displayName: 'Run Azure CLI Script'
 
 
