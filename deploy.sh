@@ -8,7 +8,7 @@
 #   "displayName": "spn-aca-azure-pipelines",
 # }
 
-# az login --service-principal --username appIdHere --password passwordHere --tenant tenentHere
+# az login --service-principal --username 6ae75f68-d956-4829-a902-1e86d195555598201 --password vei8Q~tStpzTRKzDr2sPpAFUciprZJjWtvm55555vha_I --tenant 8e2dc2c8-cb38-4b25-91cf-cca9277555558bd6a
 
 # KEY VAULT
 # az keyvault create --name thisdicekeyvault --resource-group thisresourcegroup
