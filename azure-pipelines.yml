@@ -29,17 +29,17 @@ jobs:
         SecretsFilter: '*'
         RunAsPreJob: true
 
-  - job: Build
-    displayName: 'Build Container Image'
-    dependsOn: GetSecrets
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: Docker@2
-      displayName: 'Login to ACR'
-      inputs:
-        containerRegistry: 'dockerSC'
-        command: 'login'
+  # - job: Build
+  #   displayName: 'Build Container Image'
+  #   dependsOn: GetSecrets
+  #   pool:
+  #     vmImage: 'ubuntu-latest'
+  #   steps:
+  #   - task: Docker@2
+  #     displayName: 'Login to ACR'
+  #     inputs:
+  #       containerRegistry: 'dockerSC'
+  #       command: 'login'
   #   - task: Docker@2
   #     displayName: Build and push an image to container registry
   #     inputs:
@@ -93,7 +93,7 @@ jobs:
   - job: TerraformTasks
     displayName: 'Terraform Tasks'
     # dependsOn: DeployToACR
-    dependsOn: Build
+    dependsOn: GetSecrets
     steps:
     - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@1
       displayName: 'Install Terraform'
@@ -106,10 +106,10 @@ jobs:
         addSpnToEnvironment: true
         scriptLocation: inlineScript
         inlineScript: |
-          export ARM_CLIENT_ID="$(arm-client-id)"
-          export ARM_CLIENT_SECRET="$(arm-client-secret)"
-          export ARM_TENANT_ID="$(arm-tenant-id)"
-          export ARM_SUBSCRIPTION_ID="$(arm-subscription-id)"
+          export ARM_CLIENT_ID="${arm-client-id}"
+          export ARM_CLIENT_SECRET="${arm-client-secret}"
+          export ARM_TENANT_ID="${arm-tenant-id}"
+          export ARM_SUBSCRIPTION_ID="${arm-subscription-id}"
 
           terraform init
 
