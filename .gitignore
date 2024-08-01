@@ -4,3 +4,4 @@ rawData.json
 __pycache__/
 *.pdf
 .terraform
+.hcl

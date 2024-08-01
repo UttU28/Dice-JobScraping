@@ -6,9 +6,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  imageName: 'dicecontainer'
   version: 'latest'
-  location: 'eastus'  # Change this to your desired location
   aciName: 'thiscontainerinstance'
   
 steps:
@@ -27,22 +25,22 @@ steps:
     containerRegistry: 'dockerSC'
     command: 'login'
 
-# - task: Docker@2
-#   displayName: 'Build Docker Image'
-#   inputs:
-#     containerRegistry: 'dockerSC'
-#     repository: '$(imageName)'
-#     command: 'build'
-#     Dockerfile: '**/Dockerfile'
-#     tags: $(version)
+- task: Docker@2
+  displayName: 'Build Docker Image'
+  inputs:
+    containerRegistry: 'dockerSC'
+    repository: '$(jobscraping-image)'
+    command: 'build'
+    Dockerfile: '**/Dockerfile'
+    tags: $(version)
 
-# - task: Docker@2
-#   displayName: 'Push Docker Image'
-#   inputs:
-#     containerRegistry: 'dockerSC'
-#     repository: '$(imageName)'
-#     command: 'push'
-#     tags: $(version)
+- task: Docker@2
+  displayName: 'Push Docker Image'
+  inputs:
+    containerRegistry: 'dockerSC'
+    repository: '$(jobscraping-image)'
+    command: 'push'
+    tags: $(version)
 
 - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@1
   displayName: Install Terraform
@@ -98,7 +96,7 @@ steps:
 #       az container create \
 #         --resource-group $(resourceGroupName) \
 #         --name $(aciName) \
-#         --image $(acrName).azurecr.io/$(imageName):$(version) \
+#         --image $(acrName).azurecr.io/$(jobscraping-image):$(version) \
 #         --cpu 1 \
 #         --memory 1 \
 #         --restart-policy Never \
