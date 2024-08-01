@@ -8,7 +8,6 @@ pool:
 variables:
   imageName: 'dicecontainer'
   version: 'latest'
-  # version: '39'
   location: 'eastus'  # Change this to your desired location
   aciName: 'thiscontainerinstance'
   

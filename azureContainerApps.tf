@@ -38,67 +38,67 @@ resource "azurerm_container_app_job" "job" {
   location                     = azurerm_resource_group.resource_group.location
   container_app_environment_id = azurerm_container_app_environment.app_environment.id
   resource_group_name          = azurerm_resource_group.resource_group.name
-  replica_timeout_in_seconds  = 300
+  replica_timeout_in_seconds   = 300
   # Job scheduling: every 20 minutes, from 7 AM to 5 PM CT
   schedule_trigger_config {
     cron_expression = "*/20 12-23 * * *" # Converts to CT with UTC offset (-5 in Standard Time)
   }
 
   template {
-      container {
-        name   = "${local.acrName}-random-string"
-        image  = local.acrUrl
-        cpu    = 0.75
-        memory = "1.5Gi"
+    container {
+      name   = "${local.acrName}-random-string"
+      image  = local.acrUrl
+      cpu    = 0.75
+      memory = "1.5Gi"
 
-        env {
-          name  = "databaseServer"
-          value = local.databaseServer
-        }
-        env {
-          name  = "databaseName"
-          value = local.databaseName
-        }
-        env {
-          name  = "databaseUsername"
-          value = local.databaseUsername
-        }
-        env {
-          name  = "databasePassword"
-          value = local.databasePassword
-        }
-        env {
-          name  = "blobConnectionString"
-          value = local.blobConnectionString
-        }
-        env {
-          name  = "databaseContainer"
-          value = local.databaseContainer
-        }
-        env {
-          name  = "jobDataFile"
-          value = local.jobDataFile
-        }
-        env {
-          name  = "rawDataFile"
-          value = local.rawDataFile
-        }
+      env {
+        name  = "databaseServer"
+        value = local.databaseServer
       }
+      env {
+        name  = "databaseName"
+        value = local.databaseName
+      }
+      env {
+        name  = "databaseUsername"
+        value = local.databaseUsername
+      }
+      env {
+        name  = "databasePassword"
+        value = local.databasePassword
+      }
+      env {
+        name  = "blobConnectionString"
+        value = local.blobConnectionString
+      }
+      env {
+        name  = "databaseContainer"
+        value = local.databaseContainer
+      }
+      env {
+        name  = "jobDataFile"
+        value = local.jobDataFile
+      }
+      env {
+        name  = "rawDataFile"
+        value = local.rawDataFile
+      }
+    }
   }
 
-  # registry {
-  #   server               = "${local.acrName}.azurecr.io"
-  #   username             = local.acrName
-  #   password_secret_name = "registry-credentials"
-  # }
-  # }
-
-
-  # output "azurerm_container_app_url" {
-  #   value = azurerm_container_app.app.latest_revision_fqdn
-  # }
-
-  # output "azurerm_container_app_revision_name" {
-  #   value = azurerm_container_app.app.latest_revision_name
-
+  registry {
+    server               = "${local.acrName}.azurecr.io"
+    username             = local.acrName
+    password_secret_name = "registry-credentials"
+  }
 }
+
+
+# output "azurerm_container_app_url" {
+#   value = azurerm_container_app.app.latest_revision_fqdn
+# }
+
+# output "azurerm_container_app_revision_name" {
+#   value = azurerm_container_app.app.latest_revision_name
+
+# }
