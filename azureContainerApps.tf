@@ -44,10 +44,42 @@ resource "azurerm_container_app" "app" {
   }
   template {
     container {
-      name   = "${local.acrName}-"
+      name   = "${local.acrName}randomString"
       image  = local.acrUrl
       cpu    = 0.75
       memory = "1.5Gi"
+      env {
+        name  = "databaseServer"
+        value = "${local.databaseServer}"
+      }
+      env {
+        name  = "databaseName"
+        value = "${local.databaseName}"
+      }
+      env {
+        name  = "databaseUsername"
+        value = "${local.databaseUsername}"
+      }
+      env {
+        name  = "databasePassword"
+        value = "${local.databasePassword}"
+      }
+      env {
+        name  = "blobConnectionString"
+        value = "${local.blobConnectionString}"
+      }
+      env {
+        name  = "databaseContainer"
+        value = "${local.databaseContainer}"
+      }
+      env {
+        name  = "jobDataFile"
+        value = "${local.jobDataFile}"
+      }
+      env {
+        name  = "rawDataFile"
+        value = "${local.rawDataFile}"
+      }
     }
   }
   registry {

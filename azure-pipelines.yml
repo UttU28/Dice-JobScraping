@@ -1,4 +1,6 @@
-trigger: none
+trigger: 
+  - main
+  # - none
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -43,30 +45,67 @@ steps:
     command: 'push'
     tags: $(version)
 
+- task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@1
+  displayName: Install Terraform
+
 - task: AzureCLI@2
+  displayName: "Terraform INIT"
   inputs:
-    azureSubscription: 'dicePipeline'
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
+    azureSubscription: dicePipeline
+    scriptType: bash
+    addSpnToEnvironment: true
+    scriptLocation: inlineScript
     inlineScript: |
-      #!/bin/bash
+      export ARM_CLIENT_ID='$(arm-client-id)'
+      export ARM_CLIENT_SECRET='$(arm-client-secret)'
+      export ARM_TENANT_ID='$(arm-tenant-id)'
+      export ARM_SUBSCRIPTION_ID='$(arm-subscription-id)'
+
+      terraform init
+
+- task: TerraformCLI@1
+  displayName: Terraform PLAN
+  inputs:
+    command: plan
+    azureSubscription: dicePipeline
+    environmentServiceName: dicePipeline
+    runAzLogin: true
+    allowTelemetryCollection: true
+
+
+- task: TerraformCLI@1
+  displayName: Terraform APPLY
+  inputs:
+    command: apply
+    azureSubscription: dicePipeline
+    environmentServiceName: dicePipeline
+    runAzLogin: true
+    allowTelemetryCollection: true
+
+# - task: AzureCLI@2
+#   inputs:
+#     azureSubscription: 'dicePipeline'
+#     scriptType: 'bash'
+#     scriptLocation: 'inlineScript'
+#     inlineScript: |
+#       #!/bin/bash
       
-      echo "Starting Azure CLI script..."
+#       echo "Starting Azure CLI script..."
       
-      echo "Logging in to ACR..."
-      az acr login --name $(acrName)
+#       echo "Logging in to ACR..."
+#       az acr login --name $(acrName)
       
-      echo "Creating or updating Azure Container Instance..."
-      az container create \
-        --resource-group $(resourceGroupName) \
-        --name $(aciName) \
-        --image $(acrName).azurecr.io/$(imageName):$(version) \
-        --cpu 1 \
-        --memory 1 \
-        --restart-policy Never \
-        --registry-username $(acrName) \
-        --registry-password $(acrPassword) \
-        --environment-variables 'databaseServer'='$(databaseServer)' 'databaseName'='$(databaseName)' 'databaseUsername'='$(databaseUsername)' 'databasePassword'='$(databasePassword)' 'blobConnectionString'='$(blobConnectionString)' 'databaseContainer'='$(databaseContainer)' 'jobDataFile'='$(jobDataFile)' 'rawDataFile'='$(rawDataFile)' 
-    displayName: 'Run Azure CLI Script'
+#       echo "Creating or updating Azure Container Instance..."
+#       az container create \
+#         --resource-group $(resourceGroupName) \
+#         --name $(aciName) \
+#         --image $(acrName).azurecr.io/$(imageName):$(version) \
+#         --cpu 1 \
+#         --memory 1 \
+#         --restart-policy Never \
+#         --registry-username $(acrName) \
+#         --registry-password $(acrPassword) \
+#         --environment-variables 'databaseServer'='$(databaseServer)' 'databaseName'='$(databaseName)' 'databaseUsername'='$(databaseUsername)' 'databasePassword'='$(databasePassword)' 'blobConnectionString'='$(blobConnectionString)' 'databaseContainer'='$(databaseContainer)' 'jobDataFile'='$(jobDataFile)' 'rawDataFile'='$(rawDataFile)' 
+#     displayName: 'Run Azure CLI Script'
 
 

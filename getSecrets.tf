@@ -2,13 +2,11 @@ provider "azurerm" {
   features {}
 }
 
-# Fetch the existing Key Vault
 data "azurerm_key_vault" "thiskeyvault" {
   name                = "thisdicekeyvault"
   resource_group_name = "thisresourcegroup"
 }
 
-# Fetch secrets from the Key Vault
 data "azurerm_key_vault_secret" "general-location" {
   name         = "general-location"
   key_vault_id = data.azurerm_key_vault.thiskeyvault.id
