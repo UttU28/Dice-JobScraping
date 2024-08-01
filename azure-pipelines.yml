@@ -18,16 +18,16 @@ variables:
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
 
 jobs:
-  - job: GetSecrets
-    displayName: 'Get Secrets from Key Vault'
-    steps:
-    - task: AzureKeyVault@2
-      displayName: 'Get Secrets from Key Vault'
-      inputs:
-        azureSubscription: '$(azureSubscription)'
-        KeyVaultName: 'thisdicekeyvault'
-        SecretsFilter: '*'
-        RunAsPreJob: true
+  # - job: GetSecrets
+  #   displayName: 'Get Secrets from Key Vault'
+  #   steps:
+  #   - task: AzureKeyVault@2
+  #     displayName: 'Get Secrets from Key Vault'
+  #     inputs:
+  #       azureSubscription: '$(azureSubscription)'
+  #       KeyVaultName: 'thisdicekeyvault'
+  #       SecretsFilter: '*'
+  #       RunAsPreJob: true
 
   # - job: Build
   #   displayName: 'Build Container Image'
@@ -93,8 +93,16 @@ jobs:
   - job: TerraformTasks
     displayName: 'Terraform Tasks'
     # dependsOn: DeployToACR
-    dependsOn: GetSecrets
+    # dependsOn: GetSecrets
     steps:
+    - task: AzureKeyVault@2
+      displayName: 'Get Secrets from Key Vault'
+      inputs:
+        azureSubscription: '$(azureSubscription)'
+        KeyVaultName: 'thisdicekeyvault'
+        SecretsFilter: '*'
+        RunAsPreJob: true
+
     - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@1
       displayName: 'Install Terraform'
 
@@ -106,17 +114,11 @@ jobs:
         addSpnToEnvironment: true
         scriptLocation: inlineScript
         inlineScript: |
-          echo "ARM_CLIENT_ID=${arm-client-id}" > .env
-          echo "ARM_CLIENT_SECRET=${arm-client-secret}" > .env
-          echo "ARM_TENANT_ID=${arm-tenant-id}" > .env
-          echo "ARM_SUBSCRIPTION_ID=${arm-subscription-id}" > .env
-          
-          # export ARM_CLIENT_ID=6ae75f68-d956-4829-a902-1e86d1998201
-          # export ARM_CLIENT_SECRET=vei8Q~tStpzTRKzDr2sPpAFUciprZJjWtvmvha_I
-          # export ARM_TENANT_ID=8e2dc2c8-cb38-4b25-91cf-cca92778bd6a
-          # export ARM_SUBSCRIPTION_ID=e4cf2944-5342-4787-b990-418828e39bfc
+          export ARM_CLIENT_ID='${arm-client-id}'
+          export ARM_CLIENT_SECRET='${arm-client-secret}'
+          export ARM_TENANT_ID='${arm-tenant-id}'
+          export ARM_SUBSCRIPTION_ID='${arm-subscription-id}'
 
-          source .env
           terraform init
 
     - task: TerraformCLI@1
