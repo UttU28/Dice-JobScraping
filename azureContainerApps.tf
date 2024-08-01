@@ -44,7 +44,7 @@ resource "azurerm_container_app" "app" {
   }
   template {
     container {
-      name   = "${local.acrName}randomString"
+      name   = "${local.acrName}-random-string"
       image  = local.acrUrl
       cpu    = 0.75
       memory = "1.5Gi"
