@@ -18,13 +18,13 @@ resource "azurerm_resource_group" "resource_group" {
   location = local.general-location
 }
 
-# resource "azurerm_log_analytics_workspace" "analytics_workspace" {
-#   name                = "dicesaralapplyloganalyticsworkspace"
-#   location            = azurerm_resource_group.resource_group.location
-#   resource_group_name = azurerm_resource_group.resource_group.name
-#   sku                 = "PerGB2018"
-#   retention_in_days   = 30
-# }
+resource "azurerm_log_analytics_workspace" "analytics_workspace" {
+  name                = local.jobscraping-log-analytics-workspace
+  location            = azurerm_resource_group.resource_group.location
+  resource_group_name = azurerm_resource_group.resource_group.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+}
 
 resource "azurerm_container_app_environment" "app_environment" {
   name                = local.jobscraping-app-environment
@@ -96,13 +96,3 @@ resource "azurerm_container_app_job" "job" {
     password_secret_name = "registry-credentials"
   }
 }
-
-
-# output "azurerm_container_app_url" {
-#   value = azurerm_container_app.app.latest_revision_fqdn
-# }
-
-# output "azurerm_container_app_revision_name" {
-#   value = azurerm_container_app.app.latest_revision_name
-
-# }

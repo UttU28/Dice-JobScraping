@@ -32,6 +32,11 @@ data "azurerm_key_vault_secret" "jobscraping-app-environment" {
   key_vault_id = data.azurerm_key_vault.thiskeyvault.id
 }
 
+data "azurerm_key_vault_secret" "jobscraping-log-analytics-workspace" {
+  name         = "jobscraping-log-analytics-workspace"
+  key_vault_id = data.azurerm_key_vault.thiskeyvault.id
+}
+
 data "azurerm_key_vault_secret" "acrName" {
   name         = "acrName"
   key_vault_id = data.azurerm_key_vault.thiskeyvault.id
@@ -44,13 +49,14 @@ data "azurerm_key_vault_secret" "acrPassword" {
 
 # Define local variables to store the secret values
 locals {
-  general-location            = data.azurerm_key_vault_secret.general-location.value
-  jobscraping-rg              = data.azurerm_key_vault_secret.jobscraping-rg.value
-  jobscraping-name            = data.azurerm_key_vault_secret.jobscraping-name.value
-  jobscraping-image           = data.azurerm_key_vault_secret.jobscraping-image.value
-  jobscraping-app-environment = data.azurerm_key_vault_secret.jobscraping-app-environment.value
-  acrName                     = data.azurerm_key_vault_secret.acrName.value
-  acrPassword                 = data.azurerm_key_vault_secret.acrPassword.value
-  acrUrl                      = "${local.acrName}.azurecr.io/${local.jobscraping-image}:latest"
+  general-location                    = data.azurerm_key_vault_secret.general-location.value
+  jobscraping-rg                      = data.azurerm_key_vault_secret.jobscraping-rg.value
+  jobscraping-name                    = data.azurerm_key_vault_secret.jobscraping-name.value
+  jobscraping-image                   = data.azurerm_key_vault_secret.jobscraping-image.value
+  jobscraping-app-environment         = data.azurerm_key_vault_secret.jobscraping-app-environment.value
+  jobscraping-log-analytics-workspace = data.azurerm_key_vault_secret.jobscraping-log-analytics-workspace.value
+  acrName                             = data.azurerm_key_vault_secret.acrName.value
+  acrPassword                         = data.azurerm_key_vault_secret.acrPassword.value
+  acrUrl                              = "${local.acrName}.azurecr.io/${local.jobscraping-image}:latest"
 }
 

@@ -9,7 +9,6 @@ blobConnectionString = os.getenv('blobConnectionString')
 databaseContainer = os.getenv('databaseContainer')
 
 jobDataFile, rawDataFile = os.getenv('jobDataFile'), os.getenv('rawDataFile') 
-print(jobDataFile, rawDataFile)
 
 def uploadTheFiles():
     containerClient = ContainerClient.from_connection_string(blobConnectionString, databaseContainer)
