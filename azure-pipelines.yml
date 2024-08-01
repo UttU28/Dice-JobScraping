@@ -92,7 +92,8 @@ jobs:
         
   - job: TerraformTasks
     displayName: 'Terraform Tasks'
-    dependsOn: DeployToACR
+    # dependsOn: DeployToACR
+    dependsOn: GetSecrets
     steps:
     - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@1
       displayName: 'Install Terraform'
