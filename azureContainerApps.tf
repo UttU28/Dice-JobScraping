@@ -86,6 +86,10 @@ resource "azurerm_container_app_job" "job" {
     }
   }
 
+  secret {
+    name  = "registry-credentials"
+    value = local.acrPassword
+  }
   registry {
     server               = "${local.acrName}.azurecr.io"
     username             = local.acrName
