@@ -23,12 +23,12 @@ def addNewJobSQL(jobID, title, location, company, description, datePosted, dateU
         params = (jobID, title, location, company, description.encode('utf-8'), datePosted, dateUpdated)
         cursor.execute(sql, params)
 
-        timestamp = int(datetime.now(timezone.utc).timestamp())
+        # timestamp = int(datetime.now(timezone.utc).timestamp())
         sql = '''
             INSERT INTO myQueue (id, title, timeOfArrival) 
             VALUES (?, ?, ?);
         '''
-        cursor.execute(sql, (jobID, title, timestamp))
+        cursor.execute(sql, (jobID, title, dateUpdated))
         conn.commit()
         cursor.close()
         conn.close()

@@ -18,11 +18,6 @@ from jobDescription import *
 from dataHandling import *
 from azureBaby import *
 
-server = os.getenv('server')
-username = os.getenv('username')
-print(server)
-print(username)
-
 contentOut = ["security clearance", "security-clearance", "8+", "9+", "10+", "11+", "12+"]
 contentIn = ["devops", "pipeline", "pipelines", "azure", "aws", "cloud", "cloud engineer", "cloud developer", "terraform", "ansible", "cicd", "ci-ci", "ci/cd", "kubernetes", "flask", "django", "FastAPI", "ETL"]
 
