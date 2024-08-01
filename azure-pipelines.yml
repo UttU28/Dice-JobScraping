@@ -29,66 +29,66 @@ jobs:
         SecretsFilter: '*'
         RunAsPreJob: true
 
-  - job: Build
-    displayName: 'Build Container Image'
-    dependsOn: GetSecrets
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: Docker@2
-      displayName: 'Login to ACR'
-      inputs:
-        containerRegistry: 'dockerSC'
-        command: 'login'
-    - task: Docker@2
-      displayName: Build and push an image to container registry
-      inputs:
-        containerRegistry: '$(containerRegistry)'
-        repository: '$(imageName)'
-        command: build
-        Dockerfile: '$(dockerfilePath)'
-        tags: '$(imageTag)art'
-    - task: Bash@3
-      displayName: Save Docker Image
-      inputs:
-        targetType: 'inline'
-        script: |
-          docker save $(imageRepository):$(imageTag)art -o $(Pipeline.Workspace)/$(imageName).tar
-    - task: PublishPipelineArtifact@1
-      displayName: Publish the Artifact
-      inputs:
-        targetPath: '$(Pipeline.Workspace)/$(imageName).tar'
-        artifact: '$(artifactName)'
-        publishLocation: 'pipeline'
+  # - job: Build
+  #   displayName: 'Build Container Image'
+  #   dependsOn: GetSecrets
+  #   pool:
+  #     vmImage: 'ubuntu-latest'
+  #   steps:
+  #   - task: Docker@2
+  #     displayName: 'Login to ACR'
+  #     inputs:
+  #       containerRegistry: 'dockerSC'
+  #       command: 'login'
+  #   - task: Docker@2
+  #     displayName: Build and push an image to container registry
+  #     inputs:
+  #       containerRegistry: '$(containerRegistry)'
+  #       repository: '$(imageName)'
+  #       command: build
+  #       Dockerfile: '$(dockerfilePath)'
+  #       tags: '$(imageTag)art'
+  #   - task: Bash@3
+  #     displayName: Save Docker Image
+  #     inputs:
+  #       targetType: 'inline'
+  #       script: |
+  #         docker save $(imageRepository):$(imageTag)art -o $(Pipeline.Workspace)/$(imageName).tar
+  #   - task: PublishPipelineArtifact@1
+  #     displayName: Publish the Artifact
+  #     inputs:
+  #       targetPath: '$(Pipeline.Workspace)/$(imageName).tar'
+  #       artifact: '$(artifactName)'
+  #       publishLocation: 'pipeline'
 
   
-  - job: DeployToACR
-    displayName: 'Deploy to Azure Container Registry'
-    dependsOn: Build
-    # dependsOn: CreateAppServicePlan
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-      - task: DownloadPipelineArtifact@2
-        inputs:
-          buildType: 'current'
-          artifact: '$(artifactName)'
-          targetPath: '$(Pipeline.Workspace)'
-      - task: Bash@3
-        displayName: Load Docker Image
-        inputs:
-          targetType: 'inline'
-          script: |      
-            docker load --input $(Pipeline.Workspace)/$(imageName).tar
-            docker tag $(imageRepository):$(imageTag)art $(imageRepository):$(imageTag)
-      - task: Docker@2
-        displayName: Push an image to container registry
-        inputs:
-          containerRegistry: '$(containerRegistry)'
-          repository: '$(imageName)'
-          command: push
-          Dockerfile: '$(dockerfilePath)'
-          tags: '$(imageTag)'
+  # - job: DeployToACR
+  #   displayName: 'Deploy to Azure Container Registry'
+  #   dependsOn: Build
+  #   # dependsOn: CreateAppServicePlan
+  #   pool:
+  #     vmImage: 'ubuntu-latest'
+  #   steps:
+  #     - task: DownloadPipelineArtifact@2
+  #       inputs:
+  #         buildType: 'current'
+  #         artifact: '$(artifactName)'
+  #         targetPath: '$(Pipeline.Workspace)'
+  #     - task: Bash@3
+  #       displayName: Load Docker Image
+  #       inputs:
+  #         targetType: 'inline'
+  #         script: |      
+  #           docker load --input $(Pipeline.Workspace)/$(imageName).tar
+  #           docker tag $(imageRepository):$(imageTag)art $(imageRepository):$(imageTag)
+  #     - task: Docker@2
+  #       displayName: Push an image to container registry
+  #       inputs:
+  #         containerRegistry: '$(containerRegistry)'
+  #         repository: '$(imageName)'
+  #         command: push
+  #         Dockerfile: '$(dockerfilePath)'
+  #         tags: '$(imageTag)'
         
   - job: TerraformTasks
     displayName: 'Terraform Tasks'
@@ -105,10 +105,10 @@ jobs:
         addSpnToEnvironment: true
         scriptLocation: inlineScript
         inlineScript: |
-          export ARM_CLIENT_ID='$(arm-client-id)'
-          export ARM_CLIENT_SECRET='$(arm-client-secret)'
-          export ARM_TENANT_ID='$(arm-tenant-id)'
-          export ARM_SUBSCRIPTION_ID='$(arm-subscription-id)'
+          export ARM_CLIENT_ID=$(arm-client-id)
+          export ARM_CLIENT_SECRET=$(arm-client-secret)
+          export ARM_TENANT_ID=$(arm-tenant-id)
+          export ARM_SUBSCRIPTION_ID=$(arm-subscription-id)
 
           terraform init
 
