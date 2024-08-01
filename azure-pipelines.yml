@@ -31,6 +31,7 @@ jobs:
 
   - job: Build
     displayName: 'Build Container Image'
+    dependsOn: GetSecrets
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -91,7 +92,7 @@ jobs:
         
   - job: TerraformTasks
     displayName: 'Terraform Tasks'
-    dependsOn: GetSecrets
+    dependsOn: DeployToACR
     steps:
     - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@1
       displayName: 'Install Terraform'
