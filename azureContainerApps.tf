@@ -1,12 +1,21 @@
-provider "azurerm" {
-  features {
-    
+terraform {
+  required_providers {
+    azurerm = {
+      source = "hashicorp/azurerm"
+    }
+  }
+  backend "azurerm" {
+    resource_group_name  = "thisstoragerg"
+    storage_account_name = "dicestorage02"
+    container_name       = "13form"
+    key                  = "datascrapingState"
   }
 }
 
+
 resource "azurerm_resource_group" "resource_group" {
-  name     = "thatresourcegroup"
-  location = "East US"
+  name     = local.jobscraping-rg
+  location = local.general-location
 }
 
 # resource "azurerm_log_analytics_workspace" "analytics_workspace" {
@@ -18,43 +27,35 @@ resource "azurerm_resource_group" "resource_group" {
 # }
 
 resource "azurerm_container_app_environment" "app_environment" {
-  name                       = "dicesaralapplycontainerenvi"
-  location                   = azurerm_resource_group.resource_group.location
-  resource_group_name        = azurerm_resource_group.resource_group.name
-#   log_analytics_workspace_id = azurerm_log_analytics_workspace.analytics_workspace.id
+  name                = local.jobscraping-app-environment
+  location            = azurerm_resource_group.resource_group.location
+  resource_group_name = azurerm_resource_group.resource_group.name
+  #   log_analytics_workspace_id = azurerm_log_analytics_workspace.analytics_workspace.id
 }
 resource "azurerm_container_app" "app" {
-  name                         = "dicesaralapply"
+  name                         = local.jobscraping-name
   container_app_environment_id = azurerm_container_app_environment.app_environment.id
   resource_group_name          = azurerm_resource_group.resource_group.name
   revision_mode                = "Single"
-  
+
   secret {
     name  = "registry-credentials"
-    value = "U9+ivfherZPq3+UWDnj1fxftpOqWUgXqspIc90YYFI+ACRBkerUy"
+    value = local.acrPassword
   }
   template {
     container {
-      name   = "dicesaralapply112"
-      image  = "thisacr.azurecr.io/imagename:latest"
+      name   = "${local.acrName}-"
+      image  = local.acrUrl
       cpu    = 0.75
       memory = "1.5Gi"
     }
   }
   registry {
-    server = "thisacr.azurecr.io"
-    username = "thisacr"
+    server               = "${local.acrName}.azurecr.io"
+    username             = local.acrName
     password_secret_name = "registry-credentials"
   }
-  ingress {
-     allow_insecure_connections = false
-     target_port = 50505
-     traffic_weight {
-      percentage = 100
-      latest_revision = true
-     }
-     external_enabled = true
-   }
+
 }
 
 # output "azurerm_container_app_url" {
@@ -63,5 +64,5 @@ resource "azurerm_container_app" "app" {
 
 # output "azurerm_container_app_revision_name" {
 #   value = azurerm_container_app.app.latest_revision_name
-  
+
 # }

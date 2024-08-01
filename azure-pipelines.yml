@@ -1,4 +1,4 @@
-trigger: none
+trigger: main
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -66,7 +66,7 @@ steps:
         --restart-policy Never \
         --registry-username $(acrName) \
         --registry-password $(acrPassword) \
-        --environment-variables 'server'='$(server)' 'database'='$(database)' 'username'='$(username)' 'password'='$(password)' 'connectionString'='$(connectionString)' 'containerName'='$(containerName)' 'jobDataFile'='$(jobDataFile)' 'rawDataFile'='$(rawDataFile)' 
+        --environment-variables 'databaseServer'='$(databaseServer)' 'databaseName'='$(databaseName)' 'databaseUsername'='$(databaseUsername)' 'databasePassword'='$(databasePassword)' 'blobConnectionString'='$(blobConnectionString)' 'databaseContainer'='$(databaseContainer)' 'jobDataFile'='$(jobDataFile)' 'rawDataFile'='$(rawDataFile)' 
     displayName: 'Run Azure CLI Script'
 
 

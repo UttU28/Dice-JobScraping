@@ -4,12 +4,14 @@ from datetime import datetime, timezone
 from dotenv import load_dotenv
 load_dotenv()
 
-server = os.getenv('server')
-database = os.getenv('database')
-username = os.getenv('username')
-password = os.getenv('password')
+databaseServer = os.getenv('databaseServer')
+databaseName = os.getenv('databaseName')
+databaseUsername = os.getenv('databaseUsername')
+databasePassword = os.getenv('databasePassword')
+print(databaseServer, databaseName, databaseUsername)
 
-connectionString = f'Driver={{ODBC Driver 17 for SQL Server}};Server=tcp:{server},1433;Database={database};Uid={username};Pwd={password};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;'
+
+connectionString = f'Driver={{ODBC Driver 17 for SQL Server}};Server=tcp:{databaseServer},1433;Database={databaseName};Uid={databaseUsername};Pwd={databasePassword};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;'
 
 def addNewJobSQL(jobID, title, location, company, description, datePosted, dateUpdated):
     try:
