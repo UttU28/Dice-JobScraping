@@ -8,12 +8,12 @@ databaseServer = os.getenv('databaseServer')
 databaseName = os.getenv('databaseName')
 databaseUsername = os.getenv('databaseUsername')
 databasePassword = os.getenv('databasePassword')
-print(databaseServer, databaseName, databaseUsername)
+# print(databaseServer, databaseName, databaseUsername)
 
 
 connectionString = f'Driver={{ODBC Driver 17 for SQL Server}};Server=tcp:{databaseServer},1433;Database={databaseName};Uid={databaseUsername};Pwd={databasePassword};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;'
 
-def addNewJobSQL(jobID, title, location, company, description, dateUpdated):
+def addNewJobSQL(jobID, title, location, company, description, datePosted, dateUpdated):
     try:
         conn = odbc.connect(connectionString)
         cursor = conn.cursor()
