@@ -1,15 +1,21 @@
-import os, yaml
+import os
 import pypyodbc as odbc
 from datetime import datetime, timezone
 from dotenv import load_dotenv
+import logging
+
+# Load environment variables
 load_dotenv()
 
+# Setup logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger()
+
+# Database configuration
 databaseServer = os.getenv('databaseServer')
 databaseName = os.getenv('databaseName')
 databaseUsername = os.getenv('databaseUsername')
 databasePassword = os.getenv('databasePassword')
-# print(databaseServer, databaseName, databaseUsername)
-
 
 connectionString = f'Driver={{ODBC Driver 17 for SQL Server}};Server=tcp:{databaseServer},1433;Database={databaseName};Uid={databaseUsername};Pwd={databasePassword};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;'
 
@@ -28,11 +34,8 @@ def addNewJobSQL(jobID, title, location, company, description, datePosted, dateU
         conn.commit()
         cursor.close()
         conn.close()
+        logger.info(f"Data inserted successfully for jobID: {jobID}")
         return True
-        # print(f"Data inserted successfully for {jobID}")
-    except: 
-        print("Error in Adding Data")
+    except Exception as e:
+        logger.error(f"Error in adding data for jobID: {jobID}", exc_info=e)
         return False
-
-# Example usage
-# executeAllSQL('1d2013e7-baa2-4f99-bd47-36de708e00f5', 'DevOps Databricks Engineer - Azure @ Remote', 'US', 'Aroha Technologies', 'Position:1min (Workspaces, Unity Catalog, Volumes, Ext volumes, etc.)', 1721504740, 1721504740)

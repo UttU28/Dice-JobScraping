@@ -1,3 +1,4 @@
+import logging
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -11,6 +12,7 @@ import json, os
 from datetime import datetime, timezone
 from tqdm import tqdm
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Custom Library Imports - Ensure these paths are correct based on your project structure
@@ -18,9 +20,12 @@ from jobDescription import *
 from dataHandling import *
 from azureBaby import *
 
+# Setup logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger()
+
 contentOut = ["security clearance", "security-clearance", "8+", "9+", "10+", "11+", "12+"]
 contentIn = ["devops", "pipeline", "pipelines", "azure", "aws", "cloud", "cloud engineer", "cloud developer", "terraform", "ansible", "cicd", "ci-ci", "ci/cd", "kubernetes", "flask", "django", "FastAPI", "ETL"]
-
 
 def removeOldData():
     filePath = 'rawData.json'
@@ -33,8 +38,7 @@ def removeOldData():
     }
     with open(filePath, 'w') as file:
         json.dump(filteredData, file, indent=4)
-    print(f"Deleted old data from {filePath}")
-
+    logger.info(f"Deleted old data from {filePath}")
 
 def scrapeTheJobs():
     def checkRequirementMatching(taroText, shouldBe, shouldNot):
@@ -73,41 +77,38 @@ def scrapeTheJobs():
                     with open(jsonFilePath, 'w', encoding='utf-8') as jsonFile: json.dump(jobsData, jsonFile, ensure_ascii=False, indent=4)
                     return addNewJobSQL(jobID, title, location, company, description, datePosted, dateUpdated)
         return False
-            
 
     options = Options()
-    # options.headless = True
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-notifications")
     options.add_argument("--incognito")
-    options.add_argument("--disable-dev-shm-usage")  # Disable popup blocking
-    options.add_argument("--disable-popup-blocking")  # Disable popup blocking
-    options.add_argument("--disable-infobars")  
-    # options.add_argument(f"webdriver.chrome.driver={chrome_driver_path}")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-popup-blocking")
+    options.add_argument("--disable-infobars")
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     jobKeyWords = ['DevOps', 'Azure devops', 'azure data']
     exampleElements = []
     passCount = 0
 
-    
     for jobKeyWord in jobKeyWords:
         try:
-            print(jobKeyWord.replace(' ','%20'))
-            driver.get(f"https://www.dice.com/jobs?q={jobKeyWord.replace(' ','%20')}&countryCode=US&radius=30&radiusUnit=mi&page=1&pageSize=100&filters.postedDate=ONE&filters.employmentType=CONTRACTS&filters.easyApply=true&language=en")
-            # driver.get(f"https://www.dice.com/jobs?q={jobKeyWord.replace(' ','%20')}&countryCode=US&radius=30&radiusUnit=mi&page=1&pageSize=100&filters.employmentType=CONTRACTS&filters.easyApply=true&language=en")
+            url = f"https://www.dice.com/jobs?q={jobKeyWord.replace(' ','%20')}&countryCode=US&radius=30&radiusUnit=mi&page=1&pageSize=100&filters.postedDate=ONE&filters.employmentType=CONTRACTS&filters.easyApply=true&language=en"
+            logger.info(f"Fetching jobs from URL: {url}")
+            driver.get(url)
             try:
-                print("Fetching Data")
+                logger.info("Waiting for data to load...")
                 WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.card.search-card')))
             except Exception as e:
-                print("Nai  Mila")
+                logger.error("Error waiting for data to load", exc_info=e)
             sleep(1)
             pageSource = driver.page_source
             soup = BeautifulSoup(pageSource, 'html.parser')
 
             exampleElements.extend(soup.select('div.card.search-card'))
-        except: print("Asuvidha k liye khed hai")
+        except Exception as e:
+            logger.error("Error fetching data", exc_info=e)
 
     driver.quit()
 
@@ -118,20 +119,15 @@ def scrapeTheJobs():
                 location = exampleElement.select('span.search-result-location')[0].text.strip()
                 title = exampleElement.select('a.card-title-link')[0].text.strip()
                 company = exampleElement.select('[data-cy="search-result-company-name"]')[0].text.strip()
-                # print(jobID, title, location, company)
                 if writeTheJob(jobID, title, location, company):
                     passCount += 1
-        except: print("Asuvidha k liye khed hai")
+        except Exception as e:
+            logger.error("Error processing job", exc_info=e)
 
-    print(f"\n\n\nPASS COUNT = {passCount}")
+    logger.info(f"PASS COUNT = {passCount}")
 
 if __name__ == "__main__":
     downloadTheFiles()
     removeOldData()
     scrapeTheJobs()
     uploadTheFiles()
-    # schedule.every(15).minutes.do(scrapeTheJobs)
-
-    # while True:
-    #     schedule.run_pending()
-    #     sleep(1)
