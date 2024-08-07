@@ -13,24 +13,18 @@ print(databaseServer, databaseName, databaseUsername)
 
 connectionString = f'Driver={{ODBC Driver 17 for SQL Server}};Server=tcp:{databaseServer},1433;Database={databaseName};Uid={databaseUsername};Pwd={databasePassword};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;'
 
-def addNewJobSQL(jobID, title, location, company, description, datePosted, dateUpdated):
+def addNewJobSQL(jobID, title, location, company, description, dateUpdated):
     try:
         conn = odbc.connect(connectionString)
         cursor = conn.cursor()
         
         sql = '''
-            INSERT INTO allData (id, title, location, company, description, datePosted, dateUpdated, myStatus, decisionTime) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', NULL);
+            INSERT INTO allData (id, title, location, company, description, dateUpdated) 
+            VALUES (?, ?, ?, ?, ?, ?);
         '''
-        params = (jobID, title, location, company, description.encode('utf-8'), datePosted, dateUpdated)
+        params = (jobID, title, location, company, description.encode('utf-8'), dateUpdated)
         cursor.execute(sql, params)
 
-        # timestamp = int(datetime.now(timezone.utc).timestamp())
-        sql = '''
-            INSERT INTO myQueue (id, title, timeOfArrival) 
-            VALUES (?, ?, ?);
-        '''
-        cursor.execute(sql, (jobID, title, dateUpdated))
         conn.commit()
         cursor.close()
         conn.close()
